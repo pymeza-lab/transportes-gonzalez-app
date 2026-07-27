@@ -2,6 +2,8 @@
 
 Repo: https://github.com/pymeza-lab/transportes-gonzalez-app
 
+<!-- prueba de auto-deploy: 2026-07-27 -->
+
 Este proyecto ya trae:
 - Esqueleto de Next.js + TypeScript + Tailwind
 - Esquema completo de base de datos (`supabase/migrations/0001_init_schema.sql`),
