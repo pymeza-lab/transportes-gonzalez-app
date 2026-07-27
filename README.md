@@ -1,5 +1,7 @@
 # Transportes González (TAG) — App interna de operaciones
 
+Repo: https://github.com/pymeza-lab/transportes-gonzalez-app
+
 Este proyecto ya trae:
 - Esqueleto de Next.js + TypeScript + Tailwind
 - Esquema completo de base de datos (`supabase/migrations/0001_init_schema.sql`),
