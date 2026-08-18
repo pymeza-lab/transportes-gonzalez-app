@@ -22,20 +22,33 @@ export async function loginAction(
     return { error: 'Correo y contraseña son requeridos.' }
   }
 
-  // Server-side client: escribe el token en cookies via next/headers antes de redirigir.
-  // Esto es lo que permite que el middleware y los layouts lean la sesión correctamente.
   const supabase = createClient()
 
-  const { error: authError } = await supabase.auth.signInWithPassword({
-    email,
-    password,
+  const authRes = await fetch(
+    `${process.env.NEXT_PUBLIC_SUPABASE_URL}/auth/v1/token?grant_type=password`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      },
+      body: JSON.stringify({ email, password }),
+    }
+  )
+
+  const authData = await authRes.json()
+
+  if (!authRes.ok || !authData.access_token) {
+    return { error: 'Correo o contraseña incorrectos.' }
+  }
+
+  const { error: setSessionError } = await supabase.auth.setSession({
+    access_token: authData.access_token,
+    refresh_token: authData.refresh_token,
   })
 
-  if (authError) {
-    if (authError.message.toLowerCase().includes('invalid')) {
-      return { error: 'Correo o contraseña incorrectos.' }
-    }
-    return { error: `Error de autenticación: ${authError.message}` }
+  if (setSessionError) {
+    return { error: `No se pudo establecer la sesión: ${setSessionError.message}` }
   }
 
   const { data: { user }, error: sessionError } = await supabase.auth.getUser()
@@ -62,6 +75,5 @@ export async function loginAction(
     }
   }
 
-  // Token ya en cookies — el redirect lleva la sesión consigo
   redirect(HOME_POR_ROL[usuario.rol as RolUsuario] ?? '/')
 }

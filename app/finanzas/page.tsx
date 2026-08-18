@@ -85,6 +85,22 @@ export default async function FinanzasDashboard() {
         </div>
       </div>
 
+      {/* Corte semanal de operador */}
+      <Link
+        href="/finanzas/corte"
+        className="block bg-white rounded-xl border border-gray-200 hover:border-blue-300 hover:shadow-sm transition-all p-5"
+      >
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <p className="text-sm font-bold text-gray-900">Generar corte semanal de operador</p>
+            <p className="text-xs text-gray-500 mt-0.5">
+              Elige conductor y periodo, y descarga el documento de liquidación en Excel o PDF, listo para firma.
+            </p>
+          </div>
+          <span className="text-blue-600 text-sm font-medium shrink-0">Generar →</span>
+        </div>
+      </Link>
+
       {/* Alertas de desviación */}
       {listaDesviacion.length > 0 && (
         <div className="bg-red-50 border border-red-200 rounded-xl p-4">

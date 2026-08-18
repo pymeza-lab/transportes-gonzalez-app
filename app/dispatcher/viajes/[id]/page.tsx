@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { actualizarEstadoViaje } from '../../actions'
+import DatosCierreForm from './DatosCierreForm'
 
 export const dynamic = 'force-dynamic'
 
@@ -184,6 +185,26 @@ export default async function ViajeDetailPage({ params }: { params: { id: string
           </p>
         </div>
       </div>
+
+      {/* Datos de cierre para el corte semanal del conductor */}
+      {['entregado', 'cerrado'].includes(viaje.estado) && (
+        <div className="bg-white rounded-xl border border-gray-200 p-6">
+          <h2 className="text-sm font-semibold text-gray-700 mb-1">Datos de cierre</h2>
+          <p className="text-xs text-gray-500 mb-4">
+            Se usan para generar el corte semanal del conductor (remolque, documento, kilometraje,
+            litros y fecha de cobro).
+          </p>
+          <DatosCierreForm
+            viajeId={viaje.id}
+            remolque={viaje.remolque}
+            documento={viaje.documento}
+            kmInicial={viaje.km_inicial}
+            kmFinal={viaje.km_final}
+            litros={viaje.litros}
+            fechaCobro={viaje.fecha_cobro}
+          />
+        </div>
+      )}
 
       {/* Bitácora de horas NOM-087 */}
       <div className="bg-white rounded-xl border border-gray-200 p-6">

@@ -6,8 +6,12 @@ import AppShell from '@/components/AppShell'
 import type { RolUsuario } from '@/lib/types'
 
 const NAV_ITEMS = [
-  { label: 'Inicio',  href: '/finanzas' },
-  { label: 'Viajes',  href: '/finanzas/viajes' },
+  { label: 'Inicio',       href: '/finanzas' },
+  { label: 'Viajes',       href: '/finanzas/viajes' },
+  { label: 'Registrar gasto', href: '/finanzas/gastos' },
+  { label: 'Movimientos',  href: '/finanzas/movimientos' },
+  { label: 'Conductores',  href: '/finanzas/conductores' },
+  { label: 'Corte semanal', href: '/finanzas/corte' },
 ]
 
 export default async function FinanzasLayout({ children }: { children: React.ReactNode }) {

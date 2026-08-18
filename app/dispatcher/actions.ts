@@ -137,6 +137,56 @@ export async function crearViaje(
   redirect(`/dispatcher/viajes/${nuevo.id}`)
 }
 
+// Datos de logística que se capturan al cerrar el viaje (remolque, documento,
+// kilometraje, litros, fecha de cobro) — no existían antes en ningún lado de
+// la app y hacen falta para poder generar el corte semanal del conductor sin
+// captura manual fuera de la app.
+export async function actualizarDatosCierre(
+  _prev: { error: string } | null,
+  formData: FormData
+): Promise<{ error: string } | null> {
+  const supabase = await getCallerDispatcher()
+  if (!supabase) return { error: 'Sin permisos.' }
+
+  const viajeId   = formData.get('viaje_id') as string
+  const remolque  = (formData.get('remolque') as string)?.trim() || null
+  const documento = (formData.get('documento') as string)?.trim() || null
+  const kmInicialStr  = (formData.get('km_inicial') as string)?.trim()
+  const kmFinalStr    = (formData.get('km_final') as string)?.trim()
+  const litrosStr     = (formData.get('litros') as string)?.trim()
+  const fechaCobroStr = (formData.get('fecha_cobro') as string)?.trim()
+
+  if (!viajeId) return { error: 'Falta el viaje.' }
+
+  const kmInicial = kmInicialStr ? parseFloat(kmInicialStr) : null
+  const kmFinal   = kmFinalStr   ? parseFloat(kmFinalStr)   : null
+  const litros    = litrosStr    ? parseFloat(litrosStr)    : null
+
+  if (kmInicialStr && isNaN(kmInicial as number)) return { error: 'Km inicial inválido.' }
+  if (kmFinalStr && isNaN(kmFinal as number))     return { error: 'Km final inválido.' }
+  if (litrosStr && isNaN(litros as number))       return { error: 'Litros inválido.' }
+  if (kmInicial !== null && kmFinal !== null && kmFinal < kmInicial) {
+    return { error: 'Km final no puede ser menor que km inicial.' }
+  }
+
+  const { error } = await supabase
+    .from('viaje')
+    .update({
+      remolque,
+      documento,
+      km_inicial:  kmInicial,
+      km_final:    kmFinal,
+      litros,
+      fecha_cobro: fechaCobroStr ? new Date(fechaCobroStr).toISOString() : null,
+    })
+    .eq('id', viajeId)
+
+  if (error) return { error: `Error al guardar: ${error.message}` }
+
+  revalidatePath(`/dispatcher/viajes/${viajeId}`)
+  return null
+}
+
 export async function actualizarEstadoViaje(formData: FormData): Promise<void> {
   const supabase = await getCallerDispatcher()
   if (!supabase) return
